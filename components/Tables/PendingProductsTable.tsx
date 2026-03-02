@@ -5,7 +5,6 @@ import { Column } from "@/types/UIType";
 import { Table } from "./Table";
 import { useQuery } from "@tanstack/react-query";
 import { GetPendingProducts } from "@/api/products/products";
-import { Button } from "../Button";
 
 export function PendingProductsTable() {
     const { data = [], isLoading } = useQuery({
@@ -30,11 +29,12 @@ export function PendingProductsTable() {
             />
 
             <div className="flex justify-end mt-5">
-                <Button
-                    label={"Yêu cầu duyệt"}
-                    className="bg-purple text-white"
-                    disable={data.length === 0}
-                />
+                <button
+                    className={`py-2 px-3 rounded-lg text-white bg-purple text-sm cursor-pointer`}
+                    disabled={data.length === 0}
+                >
+                    Yêu cầu duyệt
+                </button>
             </div>
         </>
     );

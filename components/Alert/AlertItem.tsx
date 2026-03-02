@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 export function AlertItem({ alert } : { alert: Alert }) {
     const dispatch = useDispatch();
 
+    // Tự động xóa alert sau 2.5 giây
     useEffect(() => {
         const timer = setTimeout(() => {
             dispatch(removeAlert(alert.id));

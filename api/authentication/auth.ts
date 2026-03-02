@@ -1,5 +1,6 @@
 import { axiosClient } from "../axiosClient";
 
+// Đăng nhập người dùng
 export async function login(email: string, password: string) {
     const response = await axiosClient.post(
         "/auth/login", 
@@ -10,6 +11,7 @@ export async function login(email: string, password: string) {
     return response.data;
 }
 
+// Lấy thông tin người dùng hiện tại
 export async function profile() {
     const response = await axiosClient.get(
         "/auth/profile",
@@ -19,6 +21,7 @@ export async function profile() {
     return response.data;
 }
 
+// Đăng xuất người dùng
 export async function logout() {
     const response = await axiosClient.post(
         "/auth/logout",

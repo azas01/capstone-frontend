@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 import { TextInput } from "../FormInputs/TextInput"
-import { Button } from "../Button";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/authentication/auth";
 import { AxiosError } from "axios";
@@ -19,6 +18,7 @@ export function LoginForm() {
     const dispatch = useDispatch();
     const router = useRouter();
 
+    // Đăng nhập
     const mutation = useMutation({
         mutationFn: () => login(userName, password),
 
@@ -35,6 +35,7 @@ export function LoginForm() {
         }
     });
 
+    // Xử lý submit form
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -73,11 +74,13 @@ export function LoginForm() {
             </div>
 
             <div className="flex justify-center mt-10">
-                <Button
-                    label={mutation.isPending ? "Đang đăng nhập..." : "Đăng nhập"}
-                    isLoading={mutation.isPending}
-                    className={"text-white bg-pink"}
-                />
+                <button className={`
+                    py-2 px-3 rounded-lg text-white bg-pink
+                    ${mutation.isPending ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`} 
+                    disabled={mutation.isPending}
+                >
+                    {mutation.isPending ? "Đang đăng nhập..." : "Đăng nhập"}
+                </button>
             </div>
         </form>
     )

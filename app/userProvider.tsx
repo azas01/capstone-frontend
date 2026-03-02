@@ -8,6 +8,7 @@ import { PageLoading } from "@/components/PageLoading";
 export function UserProvider({ children } : { children : React.ReactNode }) {
     const dispatch = useDispatch();
 
+    // Kiểm tra xem người dùng đã đăng nhập hay chưa bằng cách gọi API profile
     const { isLoading, isError, data } = useQuery({
         queryKey: ["profile"],
         queryFn: profile,

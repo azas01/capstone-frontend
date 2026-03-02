@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { TextInput } from "../FormInputs/TextInput";
 import { SelectInput } from "../FormInputs/SelectInput";
 import { SwitchInput } from "../FormInputs/SwitchInput";
-import { Button } from "../Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateProductAsync } from "@/api/products/products";
 import { useDispatch, useSelector } from "react-redux";
@@ -83,6 +82,7 @@ export function ImportProductForm() {
 
     const queryClient = useQueryClient();
 
+    // Tạo sản phẩm mới
     const createMutation = useMutation({
         mutationFn: (productData: CreateProduct) => CreateProductAsync(productData),
 
@@ -96,6 +96,7 @@ export function ImportProductForm() {
         }
     });
 
+    // Xử lý submit form thêm sản phẩm mới
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -148,6 +149,7 @@ export function ImportProductForm() {
         createMutation.mutate(productData);
     }
 
+    // Dự đoán sản phẩm từ hình ảnh đầu tiên
     const predictMutation = useMutation({
         mutationFn: (file: File) => Predict(file),
 
@@ -156,6 +158,8 @@ export function ImportProductForm() {
         },
     });
 
+
+    // Xử lý khi người dùng chọn hình ảnh để tải lên
     const handleFiles = (files: FileList | null) => {
         if (!files) return;
 
@@ -269,16 +273,18 @@ export function ImportProductForm() {
                 <div className="flex items-center justify-between mb-5">
                     <p>Thông tin sản phẩm</p>
                     <div className="flex items-center gap-3">
-                        <Button 
-                            label={"Thêm ảnh từ máy tính"} 
-                            className={"bg-purple text-white text-sm"} 
+                        <button
+                            className={`py-2 px-3 rounded-lg text-white bg-purple text-sm cursor-pointer`}
                             onClick={openFilePicker}
-                        />
+                        >
+                            Thêm ảnh từ máy tính
+                        </button>
 
-                        <Button 
-                            label={"Thêm ảnh từ điện thoại"} 
-                            className={"bg-pink text-white text-sm"} 
-                        />
+                        <button
+                            className={`py-2 px-3 rounded-lg text-white bg-pink text-sm cursor-pointer`}
+                        >
+                            Thêm ảnh từ điện thoại
+                        </button>
                     </div>
                 </div>
 
@@ -325,11 +331,13 @@ export function ImportProductForm() {
                     </div>
 
                     <div className="flex justify-end mt-5">
-                        <Button 
-                            label={createMutation.isPending ? "Đang thêm..." : "Thêm vào danh sách duyệt"} 
-                            className={"bg-pink text-white"}
-                            isLoading={createMutation.isPending}
-                        />
+                        <button className={`
+                            py-2 px-3 rounded-lg text-white bg-pink text-sm
+                            ${createMutation.isPending ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`} 
+                            disabled={createMutation.isPending}
+                        >
+                            {createMutation.isPending ? "Đang thêm..." : "Thêm vào danh sách duyệt"}
+                        </button>
                     </div>
                 </form>
             </div>
