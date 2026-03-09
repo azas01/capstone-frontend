@@ -9,9 +9,10 @@ export interface CreateProduct {
     category: string,
     color: string,
     pattern: string,
-    sizeType: "letter" | "number",
+    sizeType: "Letter" | "Number",
     quantities: ProductQuantity[],
-    createdBy: string
+    createdBy: string,
+    image: File | null
 }
 
 export interface Product {
@@ -21,9 +22,10 @@ export interface Product {
     category: string,
     color: string,
     pattern: string,
-    sizeType: "letter" | "number",
+    sizeType: "Letter" | "Number",
     quantities: ProductQuantity[],
     createdBy: string,
     createdAt: string,
-    status: "pending" | "approved" | "sending"
+    status: "Pending" | "Approved" | "Sending",
+    imageUrl: string
 }

@@ -140,9 +140,10 @@ export function ImportProductForm() {
             category, 
             color, 
             pattern, 
-            sizeType: isNumberSize ? "number" : "letter",
+            sizeType: isNumberSize ? "Number" : "Letter",
             quantities: formattedQuantities,
             createdBy: user.id,
+            image: imageFile
         };
 
         createMutation.mutate(productData);

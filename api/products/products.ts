@@ -3,10 +3,34 @@ import { axiosClient } from "../axiosClient";
 
 // Nhân viên tạo sản phẩm mới 
 export async function CreateProductAsync(productData: CreateProduct) {
+    const formData = new FormData();
+
+    formData.append("ProductID", productData.productID);
+    formData.append("ProductName", productData.productName);
+    formData.append("Category", productData.category);
+    formData.append("Color", productData.color);
+    formData.append("Pattern", productData.pattern);
+    formData.append("SizeType", productData.sizeType);
+    formData.append("CreatedBy", productData.createdBy);
+
+    productData.quantities.forEach((quantity, index) => {
+        formData.append(`Quantities[${index}].Size`, quantity.size);
+        formData.append(`Quantities[${index}].Quantities`, quantity.quantities.toString());
+    })
+
+    if (productData.image) {
+        formData.append("Image", productData.image);
+    }
+
     const response = await axiosClient.post(
         "/product/create",
-        productData,
-        { withCredentials: true }
+        formData,
+        { 
+            withCredentials: true,
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        }
     );
 
     return response.data;
