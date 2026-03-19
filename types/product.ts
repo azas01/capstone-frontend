@@ -18,6 +18,11 @@ export interface CreateProduct extends ProductBase {
     image: File | null
 }
 
+export interface UpdateProduct extends ProductBase {
+    id: string;
+    image?: File | null;
+}
+
 export interface Product extends ProductBase {
     id: string,
     createdAt: string,

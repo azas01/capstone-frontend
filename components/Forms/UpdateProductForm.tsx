@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/types/product";
+import { Product, UpdateProduct } from "@/types/product";
 import { useEffect, useRef, useState } from "react";
 import { TextInput } from "../FormInputs/TextInput";
 import { SelectInput } from "../FormInputs/SelectInput";
@@ -9,7 +9,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { categories, colors, patterns, sizesLetter, sizesNumber  } from "@/const/product";
 import { useDispatch } from "react-redux";
+import { addAlert } from "@/utilities/alertStore";
+import { AlertType } from "@/types/alert";
 import { clearEditingProduct } from "@/utilities/productEditStore";
+import { UpdateProductAsync } from "@/api/products/products";
+import { AxiosError } from "axios";
 
 interface FormState {
     productID: string;
@@ -78,9 +82,27 @@ export function UpdateProductForm({ editProduct }: UpdateProductFormProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const queryClient = useQueryClient();
 
-    // TODO: Tạo mutation cập nhật sản phẩm, gọi API update và xử lý kết quả
+    // Mutation cập nhật sản phẩm
     const updateMutation = useMutation({
+        mutationFn: (productData: UpdateProduct) => UpdateProductAsync(productData),
 
+        onSuccess: (data) => {
+            queryClient.setQueryData<Product[]>(["pendingProducts"], (oldData = []) =>
+                oldData.map((item) => (item.id === data.id ? data : item))
+            );
+
+            dispatch(addAlert({ type: AlertType.SUCCESS, message: "Cập nhật sản phẩm thành công" }));
+            dispatch(clearEditingProduct());
+        },
+
+        onError: (error: AxiosError<{ message: string }>) => {
+            const serverMessage = error.response?.data?.message;
+            dispatch(addAlert({
+                type: AlertType.ERROR,
+                message: serverMessage || "Cập nhật sản phẩm thất bại"
+            }));
+            console.error("UpdateProduct failed", error);
+        }
     });
 
 
@@ -88,6 +110,50 @@ export function UpdateProductForm({ editProduct }: UpdateProductFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!form.productID) {
+            dispatch(addAlert({ type: AlertType.WARNING, message: "Vui lòng nhập mã sản phẩm" }));
+            return;
+        }
+
+        if (!form.productName) {
+            dispatch(addAlert({ type: AlertType.WARNING, message: "Vui lòng nhập tên sản phẩm " }));
+            return;
+        }
+
+        if (!form.category) {
+            dispatch(addAlert({ type: AlertType.WARNING, message: "Vui chọn phân loại" }));
+            return;
+        }
+
+        if (!form.color) {
+            dispatch(addAlert({ type: AlertType.WARNING, message: "Vui lòng chọn màu" }));
+            return;
+        }
+
+        const sizeQuantities = form.isNumberSize ? form.numberQuantities : form.letterQuantities;
+        const formattedQuantities = Object.entries(sizeQuantities)
+            .filter(([, qty]) => qty > 0)
+            .map(([size, qty]) => ({ size, quantities: qty }));
+
+        if (formattedQuantities.length === 0) {
+            dispatch(addAlert({ type: AlertType.WARNING, message: "Vui lòng nhập số lượng cho ít nhất một size" }));
+            return;
+        }
+
+        const updateData: UpdateProduct = {
+            id: editProduct.id,
+            productID: form.productID,
+            productName: form.productName,
+            category: form.category,
+            color: form.color,
+            pattern: form.pattern,
+            sizeType: form.isNumberSize ? "Number" : "Letter",
+            quantities: formattedQuantities,
+            createdBy: editProduct.createdBy,
+            image: form.imageFile ?? undefined,
+        };
+
+        updateMutation.mutate(updateData);
     }
     
     // Xử lý file ảnh: lưu file vào state và tạo URL preview
